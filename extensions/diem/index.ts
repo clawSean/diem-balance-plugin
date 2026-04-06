@@ -34,13 +34,17 @@ function formatBalance(raw: string): string {
 
   if (diem === "??" && httpStatus === "402") diem = "0";
 
-  // Channel-safe rich formatting (markdown bold degrades gracefully)
-  const linesOut: string[] = [];
-  linesOut.push(`🪙 **Venice Diem**`);
-  linesOut.push(`• **Balance:** ${diem} Diem`);
-  if (reqUsed && reqLimit) linesOut.push(`• **Requests:** ${reqUsed} / ${reqLimit} remaining`);
-  if (tokUsed && tokLimit) linesOut.push(`• **Tokens:** ${tokUsed} / ${tokLimit} remaining`);
-  return linesOut.join("\n");
+  // Build lines using bold markdown (gracefully degrades on channels that don't support it)
+  const lines: string[] = [];
+  lines.push(`🪙 **Venice Diem**`);
+  lines.push(`• **Balance:** ${diem} Diem`);
+  if (reqUsed && reqLimit) lines.push(`• **Requests:** ${reqUsed} / ${reqLimit} remaining`);
+  if (tokUsed && tokLimit) lines.push(`• **Tokens:** ${tokUsed} / ${tokLimit} remaining`);
+  if (httpStatus === "402") {
+    lines.push(`• ⚠️ **Status:** Insufficient USD/Diem balance (HTTP 402)`);
+    lines.push("• **Top-up:** `https://venice.ai/settings/api`");
+  }
+  return lines.join("\n");
 }
 
 function resolveScriptPath(): string {
