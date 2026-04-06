@@ -34,15 +34,12 @@ function formatBalance(raw: string): string {
 
   if (diem === "??" && httpStatus === "402") diem = "0";
 
-  // Build lines using bold markdown (gracefully degrades on channels that don't support it)
+  // Compact output: bold label + monospaced value (degrades gracefully on plain-text channels)
   const lines: string[] = [];
-  lines.push(`🪙 **Venice Diem**`);
-  lines.push(`• **Balance:** ${diem} Diem`);
-  if (reqUsed && reqLimit) lines.push(`• **Requests:** ${reqUsed} / ${reqLimit} remaining`);
-  if (tokUsed && tokLimit) lines.push(`• **Tokens:** ${tokUsed} / ${tokLimit} remaining`);
+  lines.push(`**🪙 Venice Diem Balance:** \`${diem} Diem\``);
   if (httpStatus === "402") {
-    lines.push(`• ⚠️ **Status:** Insufficient USD/Diem balance (HTTP 402)`);
-    lines.push("• **Top-up:** `https://venice.ai/settings/api`");
+    lines.push(`⚠️ Insufficient USD/Diem balance (HTTP 402)`);
+    lines.push("Top-up: `https://venice.ai/settings/api`");
   }
   return lines.join("\n");
 }
