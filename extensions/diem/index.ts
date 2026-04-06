@@ -34,12 +34,13 @@ function formatBalance(raw: string): string {
 
   if (diem === "??" && httpStatus === "402") diem = "0";
 
-  let msg = `Diem balance: ${diem}`;
-  const details: string[] = [];
-  if (reqUsed && reqLimit) details.push(`Requests: ${reqUsed}/${reqLimit}`);
-  if (tokUsed && tokLimit) details.push(`Tokens: ${tokUsed}/${tokLimit}`);
-  if (details.length) msg += `\n${details.join(" | ")}`;
-  return msg;
+  // Channel-safe rich formatting (markdown bold degrades gracefully)
+  const linesOut: string[] = [];
+  linesOut.push(`🪙 **Venice Diem**`);
+  linesOut.push(`• **Balance:** ${diem} Diem`);
+  if (reqUsed && reqLimit) linesOut.push(`• **Requests:** ${reqUsed} / ${reqLimit} remaining`);
+  if (tokUsed && tokLimit) linesOut.push(`• **Tokens:** ${tokUsed} / ${tokLimit} remaining`);
+  return linesOut.join("\n");
 }
 
 function resolveScriptPath(): string {
