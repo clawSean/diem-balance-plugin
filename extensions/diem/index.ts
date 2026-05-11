@@ -34,14 +34,7 @@ function formatBalance(raw: string): string {
 
   if (diem === "??" && httpStatus === "402") diem = "0";
 
-  // Compact output: bold label + monospaced value (degrades gracefully on plain-text channels)
-  const lines: string[] = [];
-  lines.push(`**🪙 Venice Diem Balance:** \`${diem} Diem\``);
-  if (httpStatus === "402") {
-    lines.push(`⚠️ Insufficient USD/Diem balance (HTTP 402)`);
-    lines.push("Top-up: `https://venice.ai/settings/api`");
-  }
-  return lines.join("\n");
+  return `**🪙 Venice Diem Balance:** \`${diem} Diem\``;
 }
 
 function resolveScriptPath(): string {

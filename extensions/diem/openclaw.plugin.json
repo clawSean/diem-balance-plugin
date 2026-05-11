@@ -3,6 +3,7 @@
   "name": "Diem Balance Checker",
   "version": "1.0.0",
   "description": "Routes /diem command directly to diem.py without invoking main agent",
+  "activation": { "onStartup": true },
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
