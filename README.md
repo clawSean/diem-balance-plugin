@@ -18,7 +18,7 @@ No LLM inference. No token burn. Just a clean `/diem` command that pings the Ven
 - ⚡ **Zero-token** — makes a minimal 1-token inference request just to read balance headers
 - 🚀 **Startup-registered** — available immediately when OpenClaw boots
 - 📦 **Portable** — single folder, no secrets bundled, works on any machine with OpenClaw
-- 🧪 **Tested** — 15 offline baseline tests, no credentials required to run them
+- 🧪 **Tested** — 17 offline checks, no credentials required to run them
 - 🔌 **Drop-in install** — one `bash` command and a gateway restart
 
 ---
@@ -91,7 +91,7 @@ npm test
 ▸ formatBalance     PASS ×5
 ▸ diem.py syntax    PASS ×1
 
-━━━ 15 passed, 0 failed ━━━
+━━━ 17 passed, 0 failed ━━━
 ```
 
 ---
@@ -99,7 +99,7 @@ npm test
 ## 🛠️ How It Works
 
 1. `/diem` is registered as a zero-arg OpenClaw command on startup
-2. `index.ts` shells out to `diem.py` via `execSync`
+2. `index.ts` runs `diem.py` via `execFileSync` with a separate argument array (no shell)
 3. `diem.py` sends a minimal 1-token request to `https://api.venice.ai` and reads the response headers
 4. The `x-venice-balance-diem` header value is parsed and formatted
 5. Result is returned to the chat surface

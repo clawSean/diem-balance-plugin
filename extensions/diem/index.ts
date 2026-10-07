@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -58,7 +58,7 @@ export default function register(api: any) {
     handler: async () => {
       try {
         const scriptPath = resolveScriptPath();
-        const raw = execSync(`python3 ${JSON.stringify(scriptPath)}`, {
+        const raw = execFileSync("python3", [scriptPath], {
           encoding: "utf-8",
           timeout: 10000,
         });

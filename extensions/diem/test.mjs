@@ -5,10 +5,11 @@
  * Run: node test.mjs
  */
 
-import { readFileSync } from "fs";
-import { execSync } from "child_process";
+import { readFileSync, mkdtempSync, writeFileSync, existsSync } from "fs";
+import { execFileSync } from "child_process";
 import { fileURLToPath } from "url";
 import path from "path";
+import { tmpdir } from "node:os";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 let passed = 0;
@@ -97,10 +98,27 @@ assert(
 // ── 5. diem.py syntax check ─────────────────────────────────────────
 console.log("\n▸ diem.py");
 try {
-  execSync(`python3 -m py_compile ${JSON.stringify(path.join(HERE, "diem.py"))}`, { encoding: "utf-8" });
+  execFileSync("python3", ["-m", "py_compile", path.join(HERE, "diem.py")], { encoding: "utf-8" });
   assert("diem.py compiles without syntax errors", true);
 } catch (e) {
   assert("diem.py compiles without syntax errors", false);
+}
+
+// Exercise the actual handler, including shell metacharacters in script paths.
+const probeDir = mkdtempSync(path.join(tmpdir(), "diem-argv-"));
+const marker = path.join(probeDir, "should-not-exist");
+// A relative sentinel inside command substitution would execute with the old shell.
+const script = path.join(probeDir, 'balance $(touch should-not-exist).py');
+writeFileSync(script, 'print("x-venice-balance-diem: 12.5")\n');
+const oldPath = process.env.DIEM_SCRIPT_PATH, oldCwd = process.cwd();
+try {
+  process.chdir(probeDir); process.env.DIEM_SCRIPT_PATH = script;
+  const result = await registered.diem.handler();
+  assert("actual handler keeps script path literal", result.text.includes("12.5000 Diem"));
+  assert("script path never executes a shell substitution", !existsSync(marker));
+} finally {
+  process.chdir(oldCwd);
+  if (oldPath === undefined) delete process.env.DIEM_SCRIPT_PATH; else process.env.DIEM_SCRIPT_PATH = oldPath;
 }
 
 // ── Summary ─────────────────────────────────────────────────────────
